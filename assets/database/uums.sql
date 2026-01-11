@@ -4,6 +4,14 @@ CREATE DATABASE uums_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE uums_db;
 
 -- tables --
+CREATE TABLE `user` (
+  user_id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role ENUM('Admin','MeterReader','BillingClerk','Manager') NOT NULL,
+  name VARCHAR(100),
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TABLE tariff (
   tariff_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -82,6 +90,10 @@ INSERT INTO meter_reading (meter_id, reading_date, reading_value, recorded_by) V
 (9,'2025-09-01', 200.000, 2),
 (10,'2025-09-01', 80.000, 2);
 
+INSERT INTO `user` (username, password_hash, role, name) VALUES
+('admin', '$2y$10$e0NRyJv1OnmnuZgGf6zjSuoB.0Q0vR0pW6zEeZ8u8/o8aZ6Sg3f8e', 'Admin', 'System Administrator'),
+('reader1', '$2y$10$e0NRyJv1OnmnuZgGf6zjSuoB.0Q0vR0pW6zEeZ8u8/o8aZ6Sg3f8e', 'MeterReader', 'Meter Reader 1'),
+('clerk1', '$2y$10$e0NRyJv1OnmnuZgGf6zjSuoB.0Q0vR0pW6zEeZ8u8/o8aZ6Sg3f8e', 'BillingClerk', 'Billing Clerk');
 -- SQl quries --
 -- Basic function to calculate bill amount for a meter (simple: last - first * rate)
 DELIMITER //
@@ -195,6 +207,7 @@ CALL sp_generate_bill_for_meter(3,'2025-08-01','2025-09-01',1);
 INSERT INTO payment (bill_id, amount, method, recorded_by) VALUES (1, 150.00, 'Cash', 3);
 
 -- SQL End --
+
 
 
 
