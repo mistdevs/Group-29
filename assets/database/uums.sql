@@ -34,6 +34,7 @@ CREATE TABLE bill (
   FOREIGN KEY (meter_id) REFERENCES meter(meter_id),
   FOREIGN KEY (generated_by) REFERENCES `user`(user_id)
 );
+
 CREATE TABLE meter_reading (
   reading_id INT AUTO_INCREMENT PRIMARY KEY,
   meter_id INT NOT NULL,
@@ -44,6 +45,7 @@ CREATE TABLE meter_reading (
   FOREIGN KEY (meter_id) REFERENCES meter(meter_id) ON DELETE CASCADE,
   FOREIGN KEY (recorded_by) REFERENCES `user`(user_id)
 );
+
 CREATE TABLE payment (
   payment_id INT AUTO_INCREMENT PRIMARY KEY,
   bill_id INT NOT NULL,
@@ -63,6 +65,21 @@ INSERT INTO tariff (service_id, slab_start, slab_end, rate, fixed_charge, effect
 (1, NULL, NULL, 0.30, 0.00, '2023-01-01', NULL), -- electricity 0.30 per kWh
 (2, NULL, NULL, 0.10, 5.00, '2023-01-01', NULL), -- water 0.10 per m3 + fixed 5.00
 (3, NULL, NULL, 0.50, 0.00, '2023-01-01', NULL); -- gas 0.50 per m3
+
+-- SAMPLE DATA: Readings (monthly)
+INSERT INTO meter_reading (meter_id, reading_date, reading_value, recorded_by) VALUES
+(1,'2023-07-01', 1200.000, 2),
+(1,'2023-08-01', 1250.000, 2),
+(1,'2023-09-01', 1305.000, 2),
+(2,'2023-09-01', 350.000, 2),
+(3,'2023-09-01', 560.000, 2),
+(4,'2023-09-01', 220.000, 2),
+(5,'2023-09-01', 45.000, 2),
+(6,'2023-09-01', 30.000, 2),
+(7,'2023-09-01', 900.000, 2),
+(8,'2023-09-01', 370.000, 2),
+(9,'2023-09-01', 200.000, 2),
+(10,'2023-09-01', 80.000, 2);
 
 -- SQl quries --
 -- Basic function to calculate bill amount for a meter (simple: last - first * rate)
@@ -177,6 +194,7 @@ CALL sp_generate_bill_for_meter(3,'2023-08-01','2023-09-01',1);
 INSERT INTO payment (bill_id, amount, method, recorded_by) VALUES (1, 150.00, 'Cash', 3);
 
 -- SQL End --
+
 
 
 
