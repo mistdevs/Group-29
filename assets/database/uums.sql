@@ -56,7 +56,67 @@ INSERT INTO tariff (service_id, slab_start, slab_end, rate, fixed_charge, effect
 (3, NULL, NULL, 0.50, 0.00, '2023-01-01', NULL); -- gas 0.50 per m3
 
 -- SQl quries --
+-- Basic function to calculate bill amount for a meter (simple: last - first * rate)
+DELIMITER //
+CREATE FUNCTION calc_bill_amount(meter INT, startDate DATE, endDate DATE)
+RETURNS DECIMAL(12,2)
+DETERMINISTIC
+BEGIN
+  DECLARE first_read DECIMAL(12,3);
+  DECLARE last_read DECIMAL(12,3);
+  DECLARE cons DECIMAL(12,3);
+  DECLARE rate DECIMAL(12,4);
+  DECLARE fixed DECIMAL(12,2);
 
+  SELECT reading_value INTO first_read FROM meter_reading WHERE meter_id = meter AND reading_date = startDate LIMIT 1;
+  SELECT reading_value INTO last_read FROM meter_reading WHERE meter_id = meter AND reading_date = endDate LIMIT 1;
+
+  IF first_read IS NULL OR last_read IS NULL THEN
+    RETURN 0.00;
+  END IF;
+
+  SET cons = last_read - first_read;
+  SELECT t.rate, t.fixed_charge INTO rate, fixed FROM tariff t
+    JOIN meter m ON m.service_id = t.service_id
+    WHERE m.meter_id = meter
+    ORDER BY t.effective_from DESC LIMIT 1;
+
+  IF rate IS NULL THEN SET rate = 0; END IF;
+  IF fixed IS NULL THEN SET fixed = 0; END IF;
+
+  RETURN ROUND(cons * rate + fixed,2);
+END;
+//
+DELIMITER ;
+
+-- Stored Procedure to generate bill for a meter
+DELIMITER //
+CREATE PROCEDURE sp_generate_bill_for_meter(IN p_meter INT, IN p_start DATE, IN p_end DATE, IN p_generated_by INT)
+BEGIN
+  DECLARE amt DECIMAL(12,2) DEFAULT 0;
+  DECLARE tax DECIMAL(12,2) DEFAULT 0;
+  DECLARE total DECIMAL(12,2) DEFAULT 0;
+  DECLARE cons DECIMAL(12,3) DEFAULT 0;
+  DECLARE fr DECIMAL(12,3);
+  DECLARE lr DECIMAL(12,3);
+
+  SELECT reading_value INTO fr FROM meter_reading WHERE meter_id = p_meter AND reading_date = p_start LIMIT 1;
+  SELECT reading_value INTO lr FROM meter_reading WHERE meter_id = p_meter AND reading_date = p_end LIMIT 1;
+
+  IF fr IS NULL OR lr IS NULL OR lr < fr THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Missing or invalid readings for selected period.';
+  END IF;
+
+  SET cons = lr - fr;
+  SET amt = calc_bill_amount(p_meter, p_start, p_end);
+  SET tax = ROUND(amt * 0.0,2);
+  SET total = amt + tax;
+
+  INSERT INTO bill (meter_id, period_start, period_end, consumption, amount_before_tax, tax, total_amount, outstanding, due_date, status, generated_by)
+  VALUES (p_meter, p_start, p_end, cons, amt, tax, total, total, DATE_ADD(p_end, INTERVAL 14 DAY), 'Generated', p_generated_by);
+END;
+//
+DELIMITER ;
 -- payment insert, reduce outstanding on bill and update status --
 DELIMITER //
 CREATE TRIGGER trg_after_payment_insert
@@ -77,6 +137,7 @@ DELIMITER ;
 
 
 -- SQL End --
+
 
 
 
