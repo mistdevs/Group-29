@@ -62,9 +62,9 @@ CREATE TABLE payment (
 
 -- SAMPLE DATA: Tariffs (simple fixed rate entries)
 INSERT INTO tariff (service_id, slab_start, slab_end, rate, fixed_charge, effective_from, effective_to) VALUES
-(1, NULL, NULL, 0.30, 0.00, '2023-01-01', NULL), -- electricity 0.30 per kWh
-(2, NULL, NULL, 0.10, 5.00, '2023-01-01', NULL), -- water 0.10 per m3 + fixed 5.00
-(3, NULL, NULL, 0.50, 0.00, '2023-01-01', NULL); -- gas 0.50 per m3
+(1, NULL, NULL, 0.30, 0.00, '2025-01-01', NULL), 
+(2, NULL, NULL, 0.10, 5.00, '2025-01-01', NULL), 
+(3, NULL, NULL, 0.50, 0.00, '2025-01-01', NULL);
 
 -- SAMPLE DATA: Readings (monthly)
 INSERT INTO meter_reading (meter_id, reading_date, reading_value, recorded_by) VALUES
@@ -194,6 +194,7 @@ CALL sp_generate_bill_for_meter(3,'2023-08-01','2023-09-01',1);
 INSERT INTO payment (bill_id, amount, method, recorded_by) VALUES (1, 150.00, 'Cash', 3);
 
 -- SQL End --
+
 
 
 
