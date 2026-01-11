@@ -5,6 +5,36 @@ USE uums_db;
 
 -- tables --
 
+CREATE TABLE tariff (
+  tariff_id INT AUTO_INCREMENT PRIMARY KEY,
+  service_id INT NOT NULL,
+  slab_start DECIMAL(12,3),
+  slab_end DECIMAL(12,3),
+  rate DECIMAL(12,4) NOT NULL,
+  fixed_charge DECIMAL(12,2) DEFAULT 0,
+  effective_from DATE,
+  effective_to DATE,
+  FOREIGN KEY (service_id) REFERENCES service(service_id) ON DELETE CASCADE
+);
+
+CREATE TABLE bill (
+  bill_id INT AUTO_INCREMENT PRIMARY KEY,
+  meter_id INT NOT NULL,
+  period_start DATE NOT NULL,
+  period_end DATE NOT NULL,
+  consumption DECIMAL(12,3) NOT NULL,
+  amount_before_tax DECIMAL(12,2) NOT NULL,
+  tax DECIMAL(12,2) DEFAULT 0,
+  total_amount DECIMAL(12,2) NOT NULL,
+  outstanding DECIMAL(12,2) NOT NULL DEFAULT 0,
+  due_date DATE NOT NULL,
+  status ENUM('Generated','Paid','Partial','Overdue') DEFAULT 'Generated',
+  generated_by INT,
+  UNIQUE (meter_id, period_start, period_end),
+  FOREIGN KEY (meter_id) REFERENCES meter(meter_id),
+  FOREIGN KEY (generated_by) REFERENCES `user`(user_id)
+);
+
 CREATE TABLE payment (
   payment_id INT AUTO_INCREMENT PRIMARY KEY,
   bill_id INT NOT NULL,
@@ -41,4 +71,5 @@ DELIMITER ;
 
 
 -- SQL End --
+
 
