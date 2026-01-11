@@ -27,6 +27,7 @@ function require_login() {
         <a href="/u-ums/public/customers.php">Customers</a>
         <a href="/u-ums/public/meters.php">Meters</a>
         <a href="/u-ums/public/readings.php">Readings</a>
+        <a href="/u-ums/public/generate_bill.php">Generate Bill</a>
         <a href="/u-ums/public/reports.php">Reports</a>
         <a href="/u-ums/public/payments.php">Payments</a>
         <a href="/u-ums/public/logout.php">Logout</a>
