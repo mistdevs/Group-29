@@ -19,6 +19,7 @@ CREATE TABLE payment (
 
 -- values --
 
+-- SQl quries --
 
 -- payment insert, reduce outstanding on bill and update status --
 DELIMITER //
@@ -40,3 +41,4 @@ DELIMITER ;
 
 
 -- SQL End --
+
