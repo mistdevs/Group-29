@@ -68,18 +68,19 @@ INSERT INTO tariff (service_id, slab_start, slab_end, rate, fixed_charge, effect
 
 -- SAMPLE DATA: Readings (monthly)
 INSERT INTO meter_reading (meter_id, reading_date, reading_value, recorded_by) VALUES
-(1,'2023-07-01', 1200.000, 2),
-(1,'2023-08-01', 1250.000, 2),
-(1,'2023-09-01', 1305.000, 2),
-(2,'2023-09-01', 350.000, 2),
-(3,'2023-09-01', 560.000, 2),
-(4,'2023-09-01', 220.000, 2),
-(5,'2023-09-01', 45.000, 2),
-(6,'2023-09-01', 30.000, 2),
-(7,'2023-09-01', 900.000, 2),
-(8,'2023-09-01', 370.000, 2),
-(9,'2023-09-01', 200.000, 2),
-(10,'2023-09-01', 80.000, 2);
+(1,'2025-07-01', 1200.000, 2),
+(1,'2025-08-01', 1250.000, 2),
+(1,'2025-09-01', 1305.000, 2),
+(2,'2025-09-01', 350.000, 2),
+(3,'2025-08-01', 340.000, 2),
+(3,'2025-09-01', 560.000, 2),
+(4,'2025-09-01', 220.000, 2),
+(5,'2025-09-01', 45.000, 2),
+(6,'2025-09-01', 30.000, 2),
+(7,'2025-09-01', 900.000, 2),
+(8,'2025-09-01', 370.000, 2),
+(9,'2025-09-01', 200.000, 2),
+(10,'2025-09-01', 80.000, 2);
 
 -- SQl quries --
 -- Basic function to calculate bill amount for a meter (simple: last - first * rate)
@@ -186,14 +187,15 @@ FROM payment
 GROUP BY DATE_FORMAT(payment_date, '%Y-%m');
 
 -- Example: generate a few bills by calling the procedure for existing readings (so reports show something)
-CALL sp_generate_bill_for_meter(1,'2023-07-01','2023-08-01',1);
-CALL sp_generate_bill_for_meter(1,'2023-08-01','2023-09-01',1);
-CALL sp_generate_bill_for_meter(3,'2023-08-01','2023-09-01',1);
+CALL sp_generate_bill_for_meter(1,'2025-07-01','2025-08-01',1);
+CALL sp_generate_bill_for_meter(1,'2025-08-01','2025-09-01',1);
+CALL sp_generate_bill_for_meter(3,'2025-08-01','2025-09-01',1);
 
 -- Insert a payment for demo
 INSERT INTO payment (bill_id, amount, method, recorded_by) VALUES (1, 150.00, 'Cash', 3);
 
 -- SQL End --
+
 
 
 
