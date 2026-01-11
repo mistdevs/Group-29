@@ -94,8 +94,11 @@ INSERT INTO `user` (username, password_hash, role, name) VALUES
 ('admin', '$2y$10$e0NRyJv1OnmnuZgGf6zjSuoB.0Q0vR0pW6zEeZ8u8/o8aZ6Sg3f8e', 'Admin', 'System Administrator'),
 ('reader1', '$2y$10$e0NRyJv1OnmnuZgGf6zjSuoB.0Q0vR0pW6zEeZ8u8/o8aZ6Sg3f8e', 'MeterReader', 'Meter Reader 1'),
 ('clerk1', '$2y$10$e0NRyJv1OnmnuZgGf6zjSuoB.0Q0vR0pW6zEeZ8u8/o8aZ6Sg3f8e', 'BillingClerk', 'Billing Clerk');
+
 -- SQl quries --
+
 -- Basic function to calculate bill amount for a meter (simple: last - first * rate)
+
 DELIMITER //
 CREATE FUNCTION calc_bill_amount(meter INT, startDate DATE, endDate DATE)
 RETURNS DECIMAL(12,2)
@@ -207,6 +210,7 @@ CALL sp_generate_bill_for_meter(3,'2025-08-01','2025-09-01',1);
 INSERT INTO payment (bill_id, amount, method, recorded_by) VALUES (1, 150.00, 'Cash', 3);
 
 -- SQL End --
+
 
 
 
