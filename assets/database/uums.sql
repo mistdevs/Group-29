@@ -134,9 +134,41 @@ BEGIN
 END;
 //
 DELIMITER ;
+-- TRIGGER: before insert on bill to set outstanding = total_amount
+DELIMITER //
+CREATE TRIGGER trg_before_bill_insert
+BEFORE INSERT ON bill
+FOR EACH ROW
+BEGIN
+  SET NEW.outstanding = NEW.total_amount;
+END;
+//
+DELIMITER ;
 
+-- VIEWS
+CREATE VIEW vw_unpaid_bills AS
+SELECT b.bill_id, c.name AS customer, s.name AS service, b.period_start, b.period_end, b.total_amount, b.outstanding, b.due_date
+FROM bill b
+JOIN meter m ON b.meter_id = m.meter_id
+JOIN customer c ON m.customer_id = c.customer_id
+JOIN service s ON m.service_id = s.service_id
+WHERE b.outstanding > 0;
+
+CREATE VIEW vw_monthly_revenue AS
+SELECT DATE_FORMAT(payment_date, '%Y-%m') AS month, SUM(amount) AS total_collected
+FROM payment
+GROUP BY DATE_FORMAT(payment_date, '%Y-%m');
+
+-- Example: generate a few bills by calling the procedure for existing readings (so reports show something)
+CALL sp_generate_bill_for_meter(1,'2023-07-01','2023-08-01',1);
+CALL sp_generate_bill_for_meter(1,'2023-08-01','2023-09-01',1);
+CALL sp_generate_bill_for_meter(3,'2023-08-01','2023-09-01',1);
+
+-- Insert a payment for demo
+INSERT INTO payment (bill_id, amount, method, recorded_by) VALUES (1, 150.00, 'Cash', 3);
 
 -- SQL End --
+
 
 
 
