@@ -34,7 +34,16 @@ CREATE TABLE bill (
   FOREIGN KEY (meter_id) REFERENCES meter(meter_id),
   FOREIGN KEY (generated_by) REFERENCES `user`(user_id)
 );
-
+CREATE TABLE meter_reading (
+  reading_id INT AUTO_INCREMENT PRIMARY KEY,
+  meter_id INT NOT NULL,
+  reading_date DATE NOT NULL,
+  reading_value DECIMAL(12,3) NOT NULL,
+  recorded_by INT,
+  CONSTRAINT uc_meter_date UNIQUE (meter_id, reading_date),
+  FOREIGN KEY (meter_id) REFERENCES meter(meter_id) ON DELETE CASCADE,
+  FOREIGN KEY (recorded_by) REFERENCES `user`(user_id)
+);
 CREATE TABLE payment (
   payment_id INT AUTO_INCREMENT PRIMARY KEY,
   bill_id INT NOT NULL,
@@ -168,6 +177,7 @@ CALL sp_generate_bill_for_meter(3,'2023-08-01','2023-09-01',1);
 INSERT INTO payment (bill_id, amount, method, recorded_by) VALUES (1, 150.00, 'Cash', 3);
 
 -- SQL End --
+
 
 
 
