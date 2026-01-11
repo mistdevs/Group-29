@@ -49,6 +49,12 @@ CREATE TABLE payment (
 
 -- values --
 
+-- SAMPLE DATA: Tariffs (simple fixed rate entries)
+INSERT INTO tariff (service_id, slab_start, slab_end, rate, fixed_charge, effective_from, effective_to) VALUES
+(1, NULL, NULL, 0.30, 0.00, '2023-01-01', NULL), -- electricity 0.30 per kWh
+(2, NULL, NULL, 0.10, 5.00, '2023-01-01', NULL), -- water 0.10 per m3 + fixed 5.00
+(3, NULL, NULL, 0.50, 0.00, '2023-01-01', NULL); -- gas 0.50 per m3
+
 -- SQl quries --
 
 -- payment insert, reduce outstanding on bill and update status --
@@ -71,5 +77,6 @@ DELIMITER ;
 
 
 -- SQL End --
+
 
 
