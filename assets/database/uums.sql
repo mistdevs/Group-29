@@ -4,6 +4,25 @@ CREATE DATABASE uums_db CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE uums_db;
 
 -- tables --
+
+CREATE TABLE service (
+  service_id INT AUTO_INCREMENT PRIMARY KEY,
+  service_code VARCHAR(20) NOT NULL UNIQUE,
+  name VARCHAR(50) NOT NULL,
+  unit VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE customer (
+  customer_id INT AUTO_INCREMENT PRIMARY KEY,
+  customer_type ENUM('Household','Business','Government') NOT NULL,
+  name VARCHAR(150) NOT NULL,
+  address TEXT,
+  city VARCHAR(100),
+  phone VARCHAR(20),
+  email VARCHAR(100),
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE `user` (
   user_id INT AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(50) NOT NULL UNIQUE,
@@ -68,6 +87,9 @@ CREATE TABLE payment (
 
 -- values --
 
+INSERT INTO service (service_code, name, unit) VALUES
+('ELEC','Electricity','kWh'), ('WATER','Water','m3'), ('GAS','Gas','m3');
+
 -- SAMPLE DATA: Tariffs (simple fixed rate entries)
 INSERT INTO tariff (service_id, slab_start, slab_end, rate, fixed_charge, effective_from, effective_to) VALUES
 (1, NULL, NULL, 0.30, 0.00, '2025-01-01', NULL), 
@@ -94,6 +116,18 @@ INSERT INTO `user` (username, password_hash, role, name) VALUES
 ('admin', '$2y$10$e0NRyJv1OnmnuZgGf6zjSuoB.0Q0vR0pW6zEeZ8u8/o8aZ6Sg3f8e', 'Admin', 'System Administrator'),
 ('reader1', '$2y$10$e0NRyJv1OnmnuZgGf6zjSuoB.0Q0vR0pW6zEeZ8u8/o8aZ6Sg3f8e', 'MeterReader', 'Meter Reader 1'),
 ('clerk1', '$2y$10$e0NRyJv1OnmnuZgGf6zjSuoB.0Q0vR0pW6zEeZ8u8/o8aZ6Sg3f8e', 'BillingClerk', 'Billing Clerk');
+
+INSERT INTO customer (customer_type, name, address, city, phone, email) VALUES
+('Household','A. Silva','12 River Road','Colombo','0112345678','asilva@example.com'),
+('Household','K. Perera','45 Garden Ave','Colombo','0119876543','kperera@example.com'),
+('Business','Sunrise Bakery','2 Market St','Galle','091345678','contact@sunrise.lk'),
+('Business','GreenTech Pvt Ltd','88 Industrial Rd','Colombo','011556677','sales@greentech.lk'),
+('Government','City Council','1 Town Hall','Kandy','081223344','info@council.gov'),
+('Household','M. Fernando','78 Lake St','Colombo','011112233','mfernando@example.com'),
+('Household','S. Jayasinghe','5 Hill Rd','Colombo','011223344','sjay@example.com'),
+('Business','BlueCafe','9 Beach Rd','Negombo','031445566','hello@bluecafe.lk'),
+('Household','N. Rodrigo','3 Palm St','Galle','09198765','nrodrigo@example.com'),
+('Household','L. Silva','21 Palmview','Colombo','011334455','lsilva@example.com');
 
 -- SQl quries --
 
@@ -210,6 +244,7 @@ CALL sp_generate_bill_for_meter(3,'2025-08-01','2025-09-01',1);
 INSERT INTO payment (bill_id, amount, method, recorded_by) VALUES (1, 150.00, 'Cash', 3);
 
 -- SQL End --
+
 
 
 
