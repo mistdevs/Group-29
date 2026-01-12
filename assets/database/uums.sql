@@ -32,6 +32,18 @@ CREATE TABLE `user` (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE meter (
+  meter_id INT AUTO_INCREMENT PRIMARY KEY,
+  meter_no VARCHAR(50) NOT NULL UNIQUE,
+  customer_id INT NOT NULL,
+  service_id INT NOT NULL,
+  install_date DATE,
+  status ENUM('Active','Inactive','Disconnected') DEFAULT 'Active',
+  FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE,
+  FOREIGN KEY (service_id) REFERENCES service(service_id) ON DELETE RESTRICT
+);
+
+
 CREATE TABLE tariff (
   tariff_id INT AUTO_INCREMENT PRIMARY KEY,
   service_id INT NOT NULL,
@@ -128,6 +140,18 @@ INSERT INTO customer (customer_type, name, address, city, phone, email) VALUES
 ('Business','BlueCafe','9 Beach Rd','Negombo','031445566','hello@bluecafe.lk'),
 ('Household','N. Rodrigo','3 Palm St','Galle','09198765','nrodrigo@example.com'),
 ('Household','L. Silva','21 Palmview','Colombo','011334455','lsilva@example.com');
+
+INSERT INTO meter (meter_no, customer_id, service_id, install_date, status) VALUES
+('ELEC-0001',1,1,'2025-01-10','Active'),
+('WATER-0001',1,2,'2025-01-10','Active'),
+('ELEC-0002',2,1,'2025-03-01','Active'),
+('ELEC-0003',3,1,'2025-04-05','Active'),
+('WATER-0002',4,2,'2025-06-10','Active'),
+('GAS-0001',4,3,'2025-06-12','Active'),
+('ELEC-0004',6,1,'2025-02-15','Active'),
+('ELEC-0005',7,1,'2025-05-20','Active'),
+('ELEC-0006',8,1,'2025-05-25','Active'),
+('WATER-0003',9,2,'2025-07-01','Active');
 
 -- SQl quries --
 
@@ -244,6 +268,7 @@ CALL sp_generate_bill_for_meter(3,'2025-08-01','2025-09-01',1);
 INSERT INTO payment (bill_id, amount, method, recorded_by) VALUES (1, 150.00, 'Cash', 3);
 
 -- SQL End --
+
 
 
 
